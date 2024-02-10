@@ -230,10 +230,6 @@ class MftSession:
                 json.dump(mft.mft_to_json(record), outfile)
                 outfile.write('\n')
             
-        
- 
-    
-            
         if self.options.csvtimefile is not None:
             self.file_csv_time.write(mft.mft_to_l2t(record))
 

@@ -1,0 +1,11 @@
+# files
+*.pyc
+MANIFEST
+.DS_Store
+Qt/mft-casper/mft-casper.pyproject.user
+
+# Dir
+mft-env/
+Qt/mft-casper/venv/
+
+test_file/

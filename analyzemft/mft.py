@@ -21,8 +21,9 @@ from optparse import OptionParser
 from analyzemft import bitparse
 from analyzemft import mftutils
 
-# record 값 parse 
+# record 값 parse
 def parse_record(raw_record, options):
+
     record = {
         'filename': '',
         'notes': '',
@@ -399,7 +400,15 @@ def mft_to_json(record):
         #print "Make Me JSON %s, %s, %s , %s, %s"  % (str(record['recordnum']), str(record['filename']), str(record['magic']), str(record['size']), record['si']['mtime'].dtstr)
         json_object['filename'] = str(record['filename'])
         json_object['recordnumber'] = str(record['recordnum'])
-        json_object['recordtype'] = str(record['recordtype'])
+
+        # recordtype 존재하지 않는 경우, 패스
+        try:
+            json_object['recordtype'] = str(record['recordtype'])
+        except:
+            pass
+
+        # 속성 추가?
+
     else:
         #print str(record['recordnum'])  + str(record['filename'])
         json_object['filename'] = "nFn"
