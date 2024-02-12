@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 from datetime import datetime
 
+# mft 관련 유틸
 
 # DevelNote: need to pass in localtz now
+
+# WindowsTime
 
 class WindowsTime:
     """Convert the Windows time in 100 nanosecond intervals since Jan 1, 1601 to time in seconds since Jan 1, 1970"""
@@ -45,6 +48,9 @@ class WindowsTime:
         # return((t//10000000)-11644473600)
 
 
+# hexdump
+#
+
 def hexdump(chars, sep, width):
     while chars:
         line = chars[:width]
@@ -53,6 +59,7 @@ def hexdump(chars, sep, width):
         print("%s%s%s" % (sep.join("%02x" % ord(c) for c in line),
                           sep, quotechars(line)))
 
-
+# quotechars
+#
 def quotechars(chars):
     return ''.join(['.', c][c.isalnum()] for c in chars)

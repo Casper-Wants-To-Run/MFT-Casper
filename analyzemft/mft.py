@@ -24,6 +24,7 @@ from analyzemft import mftutils
 # record 값 parse
 def parse_record(raw_record, options):
 
+    # record / filename, notes, ads, datacnt
     record = {
         'filename': '',
         'notes': '',
@@ -31,13 +32,17 @@ def parse_record(raw_record, options):
         'datacnt': 0,
     }
 
+    # mft headeer 값 해석
     decode_mft_header(record, raw_record)
 
     # HACK: Apply the NTFS fixup on a 1024 byte record.
     # Note that the fixup is only applied locally to this function.
+
+    # NTFS fixup 적용
     if record['seq_number'] == raw_record[510:512] and record['seq_number'] == raw_record[1022:1024]:
         raw_record = raw_record[:510] + record['seq_attr1'] + raw_record[512:1022] + record['seq_attr2']
 
+    # record 번호
     record_number = record['recordnum']
 
     if options.debug:
@@ -49,6 +54,7 @@ def parse_record(raw_record, options):
             record['size'],
         ))
 
+    # 시그니처 값 확인 (FILE Magic)
     if record['magic'] == 0x44414142:
         if options.debug:
             print("BAAD MFT Record")
@@ -64,9 +70,13 @@ def parse_record(raw_record, options):
     read_ptr = record['attr_off']
 
     # How should we preserve the multiple attributes? Do we need to preserve them all?
+
+    # 1024 / 레코드 속성 값들을 읽어옴 (attribute)
     while read_ptr < 1024:
 
+        # atr_header
         atr_record = decode_atr_header(raw_record[read_ptr:])
+
         if atr_record['type'] == 0xffffffff:  # End of attributes
             break
 
@@ -220,11 +230,17 @@ def parse_record(raw_record, options):
                 print("ATRrecord->len < 0, exiting loop")
             break
 
+    # anomaly_detect (ON)인 경우
     if options.anomaly:
         anomaly_detect(record)
 
+    # 위 과정을 통해 저장된 정보 (record) 반환
     return record
 
+
+########
+# mft -> 분석 결과 파일
+########
 
 def mft_to_csv(record, ret_header, options):
     """Return a MFT record in CSV format"""
@@ -533,6 +549,10 @@ def add_note(record, s):
     else:
         record['notes'] = "%s | %s |" % (record['notes'], s)
 
+#######
+# mft header 관련 해석 함수
+#
+####
 
 def decode_mft_header(record, raw_record):
     record['magic'] = struct.unpack("<I", raw_record[:4])[0]
@@ -575,11 +595,16 @@ def decode_mft_magic(record):
         return 'Unknown'
 
 
-# decodeMFTisactive and decodeMFTrecordtype both look at the flags field in the MFT header.
+# decodeMFT_isactive and decodeMFT_recordtype both look at the flags field in the MFT header.
 # The first bit indicates if the record is active or inactive. The second bit indicates if it
 # is a file or a folder.
 #
 # I had this coded incorrectly initially. Spencer Lynch identified and fixed the code. Many thanks!
+
+#######
+# mft attribute 관련 해석 함수
+#
+####
 
 def decode_mft_isactive(record):
     if record['flags'] & 0x0001:
@@ -787,6 +812,7 @@ def object_id(s):
     return objstr
 
 
+# anomaly_detect
 def anomaly_detect(record):
     if record['fncnt'] > 0:
         #          print record['si']['crtime'].dt, record['fn', 0]['crtime'].dt

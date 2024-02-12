@@ -9,6 +9,7 @@
 # Date: May 2013
 #
 
+# analyzemft 버전값
 VERSION = "v3.0.1"
 
 import csv
@@ -43,6 +44,7 @@ class MftSession:
         self.debug = False
         self.mftsize = 0
 
+    # 도구 옵션 값 정의
     def mft_options(self):
 
         parser = OptionParser()
@@ -100,20 +102,28 @@ class MftSession:
         parser.add_option("-w", "--windows-path",
                           action="store_true", dest="winpath",
                           help="File paths should use the windows path separator instead of linux")
-        
+
+        ### Latex 추가 예정
+        #parser.add_option("-w", "--windows-path",
+        #                  action="store_true", dest="winpath",
+        #                  help="File paths should use the windows path separator instead of linux")
+
         
         (self.options, args) = parser.parse_args()
 
+        # ~~
         self.path_sep = '\\' if self.options.winpath else '/'
 
+        # ~~
         if self.options.excel:
             self.options.date_formatter = MftSession.fmt_excel
         else:
             self.options.date_formatter = MftSession.fmt_norm
 
+
+# mft 파일 및 분석 결과 파일 Open
     def open_files(self):
-       
-            
+
         if self.options.version:
             print(("Version is: %s" % VERSION))
             sys.exit()
@@ -155,6 +165,9 @@ class MftSession:
 
     # Provides a very rudimentary check to see if it's possible to store the entire MFT in memory
     # Not foolproof by any means, but could stop you from wasting time on a doomed to failure run.
+
+    # sizecheck 및 메모리 부족으로 발생할 수 있는 문제 방지
+
     def sizecheck(self):
 
         # The number of records in the MFT is the size of the MFT / 1024
@@ -182,12 +195,16 @@ class MftSession:
             print('Error: Not enough memory to store MFT in memory. Try running again without -s option')
             sys.exit()
 
+    # mft file - Process / 핵심
     def process_mft_file(self):
 
+        # sizecheck / Memory Error 방지
         self.sizecheck()
 
+        # file 경로 값 확인? (체크)
         self.build_filepaths()
 
+        #
         # reset the file reading
         self.num_records = 0
         self.file_mft.seek(0)
@@ -216,6 +233,7 @@ class MftSession:
 
             raw_record = self.file_mft.read(1024)
 
+    # output -> 분석 결과 작성
     def do_output(self, record):
         
         
@@ -240,6 +258,10 @@ class MftSession:
             if self.num_records % (self.mftsize / 5) == 0 and self.num_records > 0:
                 print('Building MFT: {0:.0f}'.format(100.0 * self.num_records / self.mftsize) + '%')
 
+        # Latex 추가
+
+
+    # plaso 연계 / 미완성 (추측)
     def plaso_process_mft_file(self):
 
         # TODO - Add ADS support ....
@@ -264,6 +286,8 @@ class MftSession:
 
             raw_record = self.file_mft.read(1024)
 
+    ##################################
+    # MFT 파일 내에서 파일 경로 추출시 활용
     def build_filepaths(self):
         # reset the file reading
         self.file_mft.seek(0)
@@ -271,24 +295,34 @@ class MftSession:
         self.num_records = 0
 
         # 1024 is valid for current version of Windows but should really get this value from somewhere
+
+        # 1024 바이트 읽은 후 raw_recrods 초기화
         raw_record = self.file_mft.read(1024)
-        while raw_record != b"":
+        while raw_record != b"": # raw_record 빈 문자열이 아닌 경우 계속 루프
             minirec = {}
+
+            # mft 레코드 값 파싱
             record = mft.parse_record(raw_record, self.options)
             if self.options.debug:
                 print(record)
 
+            # 앞 parse_record에서 파싱한 값에서 file 관련(file name, fncnt)만 minirec 저장
             minirec['filename'] = record['filename']
             minirec['fncnt'] = record['fncnt']
+
+            # fncnt 1인 경우, par_ref 및 이름 추출하여 저장
             if record['fncnt'] == 1:
                 minirec['par_ref'] = record['fn', 0]['par_ref']
                 minirec['name'] = record['fn', 0]['name']
+            # fncnt 2 이상인 경우,
             if record['fncnt'] > 1:
                 minirec['par_ref'] = record['fn', 0]['par_ref']
                 for i in (0, record['fncnt'] - 1):
                     # print record['fn',i]
+                    # 유니코드 nspace -> 0x1, 0x3인 경우만 파일 이름 추출 -> 저장
                     if record['fn', i]['nspace'] == 0x1 or record['fn', i]['nspace'] == 0x3:
                         minirec['name'] = record['fn', i]['name']
+                # name 값이 없는 경우, 마지막 파일 이름(name) 추출, 저장
                 if minirec.get('name') is None:
                     minirec['name'] = record['fn', record['fncnt'] - 1]['name']
 
@@ -304,14 +338,17 @@ class MftSession:
 
         self.gen_filepaths()
 
+    # fncnt 값이 0보다 큰 경우, 전체 경로 확보를 위한 함수
     def get_folder_path(self, seqnum):
         if self.debug:
             print("Building Folder For Record Number (%d)" % seqnum)
 
+        # 주어진 순번에 해당하는 레코드 -> mft 내에 없다면, Orphan 반환
         if seqnum not in self.mft:
             return 'Orphan'
 
         # If we've already figured out the path name, just return it
+        # 이미 폴더 경로가 확인된 경우, 해당 경로 반환
         if (self.mft[seqnum]['filename']) != '':
             return self.mft[seqnum]['filename']
 
@@ -319,6 +356,7 @@ class MftSession:
             # if (self.mft[seqnum]['fn',0]['par_ref'] == 0) or
             # (self.mft[seqnum]['fn',0]['par_ref'] == 5):  # There should be no seq
             # number 0, not sure why I had that check in place.
+            # 루트 디렉토리인 경우 (5) / 루트 디렉토리에 해댕되는 경로, 파일 이름 결합 -> 반환
             if self.mft[seqnum]['par_ref'] == 5:  # Seq number 5 is "/", root of the directory
                 self.mft[seqnum]['filename'] = self.path_sep + self.mft[seqnum]['name'].decode()
                 return self.mft[seqnum]['filename']
@@ -334,6 +372,7 @@ class MftSession:
             return self.mft[seqnum]['filename']
 
         # We're not at the top of the tree and we've not hit an error
+        # 위 조건 미 만족시, 부모 레코드 시퀸스 번호 활용 / 부모 폴더의 경로 확보
         parentpath = self.get_folder_path((self.mft[seqnum]['par_ref']))
         self.mft[seqnum]['filename'] = parentpath + self.path_sep + self.mft[seqnum]['name'].decode()
 
@@ -341,14 +380,17 @@ class MftSession:
 
     def gen_filepaths(self):
 
+        # mft 레코드 반복
         for i in self.mft:
 
             #            if filename starts with / or ORPHAN, we're done.
             #            else get filename of parent, add it to ours, and we're done.
 
             # If we've not already calculated the full path ....
-            if (self.mft[i]['filename']) == '':
 
+            # filename 레코드가 비어있는 경우 작업 진행
+            if (self.mft[i]['filename']) == '':
+                # fncnt 값이 0보다 큰 경우, get_folder_path -> 전체 경로 생성
                 if self.mft[i]['fncnt'] > 0:
                     self.get_folder_path(i)
                     # self.mft[i]['filename'] = self.mft[i]['filename'] + '/' +
