@@ -9,6 +9,15 @@ import sys
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 
+# 옵션값
+mft_debug = False
+mft_csv = False
+mft_json = False
+mft_Latex = False
+
+mft_file_name = ""
+mft_report_name = ""
+
 # UI 파일 연결
 form_class = uic.loadUiType("Qt/form.ui")[0]
 
@@ -17,13 +26,62 @@ class WindowClass(QMainWindow, form_class):
         super().__init__()
         self.setupUi(self)
 
-        # layout = QVBoxLayout()
+        self.pushButton_MFT_location.clicked.connect(self.buttonMft)
+        self.pushButton_Report_location.clicked.connect(self.buttonReport)
+        self.pushButton_Run.clicked.connect(self.buttonRun)
 
-        self.pushButton_MFT_location.clicked.connect(self.buttonMFTFunction)
-        self.pushButton_Report_location.clicked.connect(self.buttonMFTFunction)
+        self.checkBox_DEBUG.stateChanged.connect(self.chkFunction)
+        self.checkBox_CSV.stateChanged.connect(self.chkFunction)
+        self.checkBox_JSON.stateChanged.connect(self.chkFunction)
+        self.checkBox_LaTex.stateChanged.connect(self.chkFunction)
 
-    def buttonMFTFunction(self):
+    def chkFunction(self):
+        if self.checkBox_DEBUG.isChecked():
+            print("DEBUG Checked")
+        if self.checkBox_CSV.isChecked():
+            print("CSV Checked")
+        if self.checkBox_JSON.isChecked():
+            print("JSON Checked")
+        if self.checkBox_LaTex.isChecked():
+            print("LaTex Checked")
+
+    def buttonMft(self):
         print("MFT Clicked")
+        mft_file, check = QFileDialog.getOpenFileName(self, '파일 선택창', "", "All Files (*)")
+        if check:
+            self.textBrowser_MFT.setText(mft_file)
+            mft_file_name = mft_file
+        print(mft_file)
+
+    def buttonReport(self):
+        print("Report Clicked")
+        report_file = QFileDialog.getExistingDirectory(self, '파일 선택창')
+        if report_file:
+            self.textBrowser_SAVE.setText(report_file)
+            mft_report_name = report_file
+        print(report_file)
+
+    def buttonRun(self):
+        print("Run Clicked")
+        if self.checkBox_DEBUG.isChecked():
+            mft_debug = True
+        if self.checkBox_CSV.isChecked():
+            mft_csv = True
+        if self.checkBox_JSON.isChecked():
+            mft_json = True
+        if self.checkBox_LaTex.isChecked():
+            mft_Latex = True
+
+        # analyzemft Part
+        # mft_file_name / mft_report_name
+        session = mftsession.MftSession()
+
+        # 인자 값 확인
+        session.mft_options()
+        # mft 및 인자 값에 따른 분석 결과 파일 Open
+        session.open_files()
+        # mft 파일 분석
+        session.process_mft_file()
 
 
 if __name__ == "__main__":

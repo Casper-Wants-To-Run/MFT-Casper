@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Widget</class>
- <widget class="QWidget" name="Widget">
-  <property name="enabled">
-   <bool>false</bool>
-  </property>
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -28,12 +25,6 @@
    <property name="text">
     <string>location</string>
    </property>
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
   </widget>
   <widget class="QTextBrowser" name="textBrowser_MFT">
    <property name="geometry">
@@ -56,12 +47,6 @@
    </property>
    <property name="text">
     <string>location</string>
-   </property>
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
    </property>
   </widget>
   <widget class="QTextBrowser" name="textBrowser_SAVE">
@@ -100,7 +85,7 @@
     <string>분석 파일 / MFT</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="pushButton_Run">
    <property name="geometry">
     <rect>
      <x>640</x>
@@ -151,9 +136,6 @@
    <property name="text">
     <string>DEBUG</string>
    </property>
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
   </widget>
   <widget class="QCheckBox" name="checkBox_CSV">
    <property name="geometry">
@@ -166,9 +148,6 @@
    </property>
    <property name="text">
     <string>CSV</string>
-   </property>
-   <property name="checkable">
-    <bool>false</bool>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkBox_JSON">
@@ -183,9 +162,6 @@
    <property name="text">
     <string>json</string>
    </property>
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
   </widget>
   <widget class="QCheckBox" name="checkBox_LaTex">
    <property name="geometry">
@@ -198,9 +174,6 @@
    </property>
    <property name="text">
     <string>LaTex</string>
-   </property>
-   <property name="checkable">
-    <bool>false</bool>
    </property>
   </widget>
  </widget>
