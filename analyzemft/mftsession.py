@@ -69,17 +69,24 @@ class MftSession:
         self.debug = False
         self.mftsize = 0
 
-    # fot GUI - TEST / 별도 파일 분리? -> mftsessionGUI?
+    # fot GUI 
     def mft_option_gui(self, gui_filename):
-
         print("mft_option_gui Run..")
 
         self.options = Options()
         self.options.filename = gui_filename
         self.options.json = "test.json"
 
-        print("filename")
-        print(gui_filename)
+        # 파일 이름 -> date 값 기준 / 동작 시간
+        # csv
+
+        # json
+
+        # Latex
+
+        # report dir
+        # my_path = os.path.join("some_folder", "some_file.txt")
+
 
         # (options, args) = parser.parse_args()
         self.path_sep = '\\' if self.options.winpath else '/'
@@ -102,10 +109,12 @@ class MftSession:
         parser.add_option("-f", "--file", dest="filename",
                           help="read MFT from FILE", metavar="FILE")
 
+        # json
         parser.add_option("-j", "--json",
                           dest="json",
                           help="File paths should use the windows path separator instead of linux")        
-        
+
+        # CSV
         parser.add_option("-o", "--output", dest="output",
                           help="write results to FILE", metavar="FILE")
 
@@ -126,6 +135,7 @@ class MftSession:
         parser.add_option("--bodyfull", action="store_true", dest="bodyfull",
                           help="Use full path name + filename rather than just filename")
 
+        # csvtimefile
         parser.add_option("-c", "--csvtimefile", dest="csvtimefile",
                           help="write CSV format timeline file", metavar="FILE")
 

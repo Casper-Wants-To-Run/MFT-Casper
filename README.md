@@ -16,7 +16,7 @@
 - [ ] $MFT 결과 / 검색 기능 추가
 - [ ] $MFT 색인 기능 추가 (ex.MFT explorer)
 - [ ] $ATTRIBUTE_LIST 개선 / [개선 필요점](https://github.com/dkovar/analyzeMFT/issues/56)
-
+- [ ] analyzeMFT 기존 제공 기능 개선 
 
 ## 사용 방법
 
