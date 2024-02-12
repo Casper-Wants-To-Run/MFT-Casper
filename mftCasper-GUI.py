@@ -28,8 +28,8 @@ class WindowClass(QMainWindow, form_class):
         self.mft_file_name = ""
         self.mft_report_name = ""
 
-        self.mft_file_name = self.pushButton_MFT_location.clicked.connect(self.buttonMft)
-        self.mft_report_name = self.pushButton_Report_location.clicked.connect(self.buttonReport)
+        self.pushButton_MFT_location.clicked.connect(self.buttonMft)
+        self.pushButton_Report_location.clicked.connect(self.buttonReport)
 
         self.pushButton_Run.clicked.connect(self.buttonRun)
 
@@ -53,17 +53,16 @@ class WindowClass(QMainWindow, form_class):
         mft_file, check = QFileDialog.getOpenFileName(self, '파일 선택창', "", "All Files (*)")
         if check:
             self.textBrowser_MFT.setText(mft_file)
+            self.mft_file_name = mft_file
         print(mft_file)
-        return mft_file
 
     def buttonReport(self):
         print("Report Clicked")
         report_file = QFileDialog.getExistingDirectory(self, '파일 선택창')
         if report_file:
             self.textBrowser_SAVE.setText(report_file)
-            mft_report_name = report_file
+            self.mft_report_name = report_file
         print(report_file)
-        return report_file
 
     def buttonRun(self):
         print("Run Clicked")
@@ -78,6 +77,7 @@ class WindowClass(QMainWindow, form_class):
 
         print("MFT NAME")
         print(self.mft_file_name)
+
         if self.mft_file_name == '':
             self.textBrowser_MFT.setText("mft 파일 경로를 지정해주세요.")
         else:

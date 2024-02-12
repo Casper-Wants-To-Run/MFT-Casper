@@ -25,6 +25,30 @@ from analyzemft import mft
 SIAttributeSizeXP = 72
 SIAttributeSizeNT = 48
 
+class Options:
+    # self.options Value
+    # {'inmemory': False, 'debug': False, 'UseLocalTimezone': False, 'UseGUI': False,
+    # 'version': None, 'filename': None, 'json': None, 'output': None, 'anomaly': None,
+    # 'excel': None, 'bodyfile': None, 'bodystd': None, 'bodyfull': None, 'csvtimefile': None,
+    # 'localtz': None, 'progress': None, 'winpath': None}
+    def __init__(self):
+        self.inmemory = False
+        self.debug = False
+        self.UseLocalTimezone = False
+        self.UseGUI = False
+        self.version = None
+        self.filename = None
+        self.json = None
+        self.output = None
+        self.anomaly = None
+        self.excel = None
+        self.bodyfile = None
+        self.bodystd = None
+        self.bodyfull = None
+        self.csvtimefile = None
+        self.localtz = None
+        self.progress = None
+        self.winpath = None
 
 class MftSession:
     """Class to describe an entire MFT processing session"""
@@ -49,42 +73,15 @@ class MftSession:
     def mft_option_gui(self, gui_filename):
 
         print("mft_option_gui Run..")
-        # self.options Value
-        # {'inmemory': False, 'debug': False, 'UseLocalTimezone': False, 'UseGUI': False,
-        # 'version': None, 'filename': None, 'json': None, 'output': None, 'anomaly': None,
-        # 'excel': None, 'bodyfile': None, 'bodystd': None, 'bodyfull': None, 'csvtimefile': None,
-        # 'localtz': None, 'progress': None, 'winpath': None}
 
-        # options 값 정의 및 확인
-        self.options['inmemory'] = False
-        #check
-        self.options['debug'] = True
+        self.options = Options()
+        self.options.filename = gui_filename
+        self.options.json = "test.json"
 
-        self.options['UseLocalTimezone'] = False
-        self.options['UseGUI'] = False
-
-        # check
-        self.options['filename'] = gui_filename
-
-        self.options['json'] = 'test.json'
-
-        self.options['output'] = False
-        self.options['anomaly'] = None
-        self.options['excel'] = None
-        self.options['bodyfile'] = None
-        self.options['bodyfull'] = None
-        self.options['csvtimefile'] = None
-        self.options['localtz'] = None
-        self.options['progress'] = None
-        self.options['winpath'] = None
-
-        print(self.options['winpath'])
-        print(self.options)
-
-        print(self.options.json)
+        print("filename")
+        print(gui_filename)
 
         # (options, args) = parser.parse_args()
-
         self.path_sep = '\\' if self.options.winpath else '/'
 
         # ~~
