@@ -10,6 +10,6 @@ setup(
     url='http://github.com/dkovar/analyzeMFT',
     license='LICENSE.txt',
     description='Analyze the $MFT from a NTFS filesystem.',
-    long_description=open('Doc/analyzemft/README.txt').read(),
-    scripts=['analyzeMFT.py']
+    long_description=open('README.txt').read(),
+    scripts=['mftCasper-CLI.py']
 )

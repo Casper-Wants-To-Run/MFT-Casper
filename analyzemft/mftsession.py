@@ -12,12 +12,13 @@
 # analyzemft 버전값
 VERSION = "v3.0.1"
 
+
 import csv
 import json
 import os
 import sys
-from optparse import OptionParser
 
+from optparse import OptionParser
 from analyzemft import mft
 
 
@@ -44,9 +45,57 @@ class MftSession:
         self.debug = False
         self.mftsize = 0
 
+    # fot GUI - TEST / 별도 파일 분리? -> mftsessionGUI?
+    def mft_option_gui(self, gui_filename):
+
+        print("mft_option_gui Run..")
+        # self.options Value
+        # {'inmemory': False, 'debug': False, 'UseLocalTimezone': False, 'UseGUI': False,
+        # 'version': None, 'filename': None, 'json': None, 'output': None, 'anomaly': None,
+        # 'excel': None, 'bodyfile': None, 'bodystd': None, 'bodyfull': None, 'csvtimefile': None,
+        # 'localtz': None, 'progress': None, 'winpath': None}
+
+        # options 값 정의 및 확인
+        self.options['inmemory'] = False
+        #check
+        self.options['debug'] = True
+
+        self.options['UseLocalTimezone'] = False
+        self.options['UseGUI'] = False
+
+        # check
+        self.options['filename'] = gui_filename
+
+        self.options['json'] = 'test.json'
+
+        self.options['output'] = False
+        self.options['anomaly'] = None
+        self.options['excel'] = None
+        self.options['bodyfile'] = None
+        self.options['bodyfull'] = None
+        self.options['csvtimefile'] = None
+        self.options['localtz'] = None
+        self.options['progress'] = None
+        self.options['winpath'] = None
+
+        print(self.options['winpath'])
+        print(self.options)
+
+        print(self.options.json)
+
+        # (options, args) = parser.parse_args()
+
+        self.path_sep = '\\' if self.options.winpath else '/'
+
+        # ~~
+        if self.options.excel:
+            self.options.date_formatter = MftSession.fmt_excel
+        else:
+            self.options.date_formatter = MftSession.fmt_norm
+
+
     # 도구 옵션 값 정의
     def mft_options(self):
-
         parser = OptionParser()
         parser.set_defaults(inmemory=False, debug=False, UseLocalTimezone=False, UseGUI=False)
 
@@ -108,8 +157,11 @@ class MftSession:
         #                  action="store_true", dest="winpath",
         #                  help="File paths should use the windows path separator instead of linux")
 
-        
+        # check
         (self.options, args) = parser.parse_args()
+
+        # DEBUG
+        print(self.options)
 
         # ~~
         self.path_sep = '\\' if self.options.winpath else '/'
