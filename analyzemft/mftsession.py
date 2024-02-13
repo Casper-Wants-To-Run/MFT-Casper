@@ -17,6 +17,7 @@ import csv
 import json
 import os
 import sys
+import time
 
 from optparse import OptionParser
 from analyzemft import mft
@@ -27,10 +28,6 @@ SIAttributeSizeNT = 48
 
 class Options:
     # self.options Value
-    # {'inmemory': False, 'debug': False, 'UseLocalTimezone': False, 'UseGUI': False,
-    # 'version': None, 'filename': None, 'json': None, 'output': None, 'anomaly': None,
-    # 'excel': None, 'bodyfile': None, 'bodystd': None, 'bodyfull': None, 'csvtimefile': None,
-    # 'localtz': None, 'progress': None, 'winpath': None}
     def __init__(self):
         self.inmemory = False
         self.debug = False
@@ -49,6 +46,7 @@ class Options:
         self.localtz = None
         self.progress = None
         self.winpath = None
+        self.Latex = None
 
 class MftSession:
     """Class to describe an entire MFT processing session"""
@@ -69,24 +67,53 @@ class MftSession:
         self.debug = False
         self.mftsize = 0
 
-    # fot GUI 
-    def mft_option_gui(self, gui_filename):
+    # fot GUI
+    def mft_option_gui(self, mft_filename, mft_debug, mft_csv, mft_Latex, mft_json, mft_report_name):
         print("mft_option_gui Run..")
 
         self.options = Options()
-        self.options.filename = gui_filename
-        self.options.json = "test.json"
 
+        if(mft_filename != ''):
+            self.options.filename = mft_filename
+        else:
+            print("Unable to open file: %s" % self.options.filename)
+            sys.exit()
+
+        # self.options.json = "test.json"
         # 파일 이름 -> date 값 기준 / 동작 시간
-        # csv
 
-        # json
-
-        # Latex
+        # filename - gen
+        report_name = time.strftime("%Y%m%d-%H%M%S")
 
         # report dir
-        # my_path = os.path.join("some_folder", "some_file.txt")
+        if (mft_report_name != ''):
+            report_dir = mft_report_name
+        else:
+            report_dir = ''
 
+        # Debug -> 파일 제작?
+        if(mft_debug == True):
+            self.options.debug = True
+
+        # csv
+        if(mft_csv == True):
+            self.options.output = report_name + ".csv"
+            self.options.output = os.path.join(report_dir, self.options.output)
+        # json
+        if(mft_json == True):
+            self.options.json = report_dir + report_name + ".json"
+            self.options.json = os.path.join(report_dir, self.options.json)
+
+        # Latex
+        if (mft_Latex == True):
+            self.options.Latex = report_dir + report_name + ".tex"
+            self.options.Latex = os.path.join(report_dir, self.options.Latex)
+
+        # DEBUG
+        print(mft_csv, mft_json, mft_Latex)
+        print(self.options.output)
+        print(self.options.json)
+        print(self.options.Latex)
 
         # (options, args) = parser.parse_args()
         self.path_sep = '\\' if self.options.winpath else '/'

@@ -11,12 +11,6 @@ import traceback
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 
-# 옵션값
-mft_debug = False
-mft_csv = False
-mft_json = False
-mft_Latex = False
-
 # UI 파일 연결
 form_class = uic.loadUiType("Qt/form.ui")[0]
 
@@ -77,8 +71,6 @@ class WindowClass(QMainWindow, form_class):
         else:
             self.mft_Latex = False
 
-        print(self.mft_debug, self.mft_csv, self.mft_json, self.mft_Latex)
-
     def buttonMft(self):
         print("MFT Clicked")
         mft_file, check = QFileDialog.getOpenFileName(self, '파일 선택창', "", "All Files (*)")
@@ -112,9 +104,11 @@ class WindowClass(QMainWindow, form_class):
                     session = mftsession.MftSession()
 
                     # 인자 값 확인
-                    session.mft_option_gui(self.mft_file_name)
+                    session.mft_option_gui(self.mft_file_name, self.mft_debug, self.mft_csv, self.mft_Latex, self.mft_json, self.mft_report_name)
+
                     # mft 및 인자 값에 따른 분석 결과 파일 Open
                     session.open_files()
+
                     # mft 파일 분석
                     session.process_mft_file()
                 except Exception as ex:
@@ -122,6 +116,7 @@ class WindowClass(QMainWindow, form_class):
                     print("오류 발생!")
                     err_msg = traceback.format_exc()
                     print(err_msg)
+            self.textBrowser_MFT.setText("작업 완료! 보고서 파일을 확인해주세요.")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
