@@ -407,6 +407,11 @@ def mft_to_csv(record, ret_header, options):
 
     return csv_string
 
+# MD5|name|inode|mode_as_string|UID|GID|size|atime|mtime|ctime|crtime
+# Latex 제작 함수
+def mft_to_latex(record):
+    pass
+
 
 # MD5|name|inode|mode_as_string|UID|GID|size|atime|mtime|ctime|crtime
 def mft_to_json(record):

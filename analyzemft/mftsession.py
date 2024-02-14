@@ -21,6 +21,7 @@ import time
 
 from optparse import OptionParser
 from analyzemft import mft
+from pylatex import Document, Section, Subsection, Command, NoEscape
 
 
 SIAttributeSizeXP = 72
@@ -79,10 +80,8 @@ class MftSession:
             print("Unable to open file: %s" % self.options.filename)
             sys.exit()
 
-        # self.options.json = "test.json"
         # 파일 이름 -> date 값 기준 / 동작 시간
-
-        # filename - gen
+        # filename
         report_name = time.strftime("%Y%m%d-%H%M%S")
 
         # report dir
@@ -91,7 +90,7 @@ class MftSession:
         else:
             report_dir = ''
 
-        # Debug -> 파일 제작?
+        # DEBUG
         if(mft_debug == True):
             self.options.debug = True
 
@@ -101,19 +100,19 @@ class MftSession:
             self.options.output = os.path.join(report_dir, self.options.output)
         # json
         if(mft_json == True):
-            self.options.json = report_dir + report_name + ".json"
+            self.options.json = report_name + ".json"
             self.options.json = os.path.join(report_dir, self.options.json)
 
-        # Latex
+        # Latex  / 연결 Only
         if (mft_Latex == True):
-            self.options.Latex = report_dir + report_name + ".tex"
+            self.options.Latex = report_name
             self.options.Latex = os.path.join(report_dir, self.options.Latex)
 
         # DEBUG
-        print(mft_csv, mft_json, mft_Latex)
-        print(self.options.output)
-        print(self.options.json)
-        print(self.options.Latex)
+        #print(mft_csv, mft_json, mft_Latex)
+        #print(self.options.output)
+        #print(self.options.json)
+        #print(self.options.Latex)
 
         # (options, args) = parser.parse_args()
         self.path_sep = '\\' if self.options.winpath else '/'
@@ -191,11 +190,10 @@ class MftSession:
         #                  action="store_true", dest="winpath",
         #                  help="File paths should use the windows path separator instead of linux")
 
-        # check
         (self.options, args) = parser.parse_args()
 
         # DEBUG
-        print(self.options)
+        # print(self.options)
 
         # ~~
         self.path_sep = '\\' if self.options.winpath else '/'
@@ -321,8 +319,7 @@ class MftSession:
 
     # output -> 분석 결과 작성
     def do_output(self, record):
-        
-        
+
         if self.options.inmemory:
             self.fullmft[self.num_records] = record
 
@@ -344,8 +341,27 @@ class MftSession:
             if self.num_records % (self.mftsize / 5) == 0 and self.num_records > 0:
                 print('Building MFT: {0:.0f}'.format(100.0 * self.num_records / self.mftsize) + '%')
 
-        # Latex 추가
+        # Latex / 구현 중...
+        if self.options.Latex is not None:
+            # LaTeX 문서 생성
+            doc = Document()
 
+            # 제목 추가
+            doc.preamble.append(Command('title', 'My Document'))
+            doc.preamble.append(Command('author', 'John Doe'))
+            doc.preamble.append(Command('date', ''))
+            doc.append(NoEscape(r'\maketitle'))
+
+            # 섹션 및 하위 섹션 추가
+            with doc.create(Section('Section 1')):
+                doc.append('Content of section 1')
+                with doc.create(Subsection('Subsection 1')):
+                    doc.append('Content of subsection 1')
+                with doc.create(Subsection('Subsection 2')):
+                    doc.append('Content of subsection 2')
+
+            # LaTex 문서 저장
+            doc.generate_tex(self.options.Latex)
 
     # plaso 연계 / 미완성 (추측)
     def plaso_process_mft_file(self):

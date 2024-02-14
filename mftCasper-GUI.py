@@ -6,7 +6,9 @@ except:
     from .analyzemft import mftsession
 
 import sys
+import os
 import traceback
+import time
 
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
@@ -28,6 +30,8 @@ class WindowClass(QMainWindow, form_class):
         self.mft_file_name = ""
         self.mft_report_name = ""
 
+        self.mft_log_name = ""
+
         # GUI -> 버튼 및 체크박스 연결
         self.pushButton_MFT_location.clicked.connect(self.buttonMft)
         self.pushButton_Report_location.clicked.connect(self.buttonReport)
@@ -39,18 +43,19 @@ class WindowClass(QMainWindow, form_class):
         self.mft_Latex = self.checkBox_JSON.stateChanged.connect(self.chkFunction)
         self.mft_json = self.checkBox_LaTex.stateChanged.connect(self.chkFunction)
 
-    def chkFunction(self):
-        '''
-        if self.checkBox_DEBUG.isChecked():
-            print("DEBUG Checked")
-        if self.checkBox_CSV.isChecked():
-            print("CSV Checked")
-        if self.checkBox_JSON.isChecked():
-            print("JSON Checked")
-        if self.checkBox_LaTex.isChecked():
-            print("LaTex Checked")
-        '''
+    def mft_debug_check(self):
+        if(self.mft_debug == True):
+            log_name = time.strftime("%Y%m%d-%H%M%S") + '.txt'
 
+            if (self.mft_report_name != ''):
+                report_dir = self.mft_report_name
+            else:
+                report_dir = ''
+            self.mft_log_name = os.path.join(report_dir, log_name)
+        else:
+            pass
+
+    def chkFunction(self):
         if self.checkBox_DEBUG.isChecked():
             self.mft_debug = True
         else:
@@ -92,7 +97,12 @@ class WindowClass(QMainWindow, form_class):
     def buttonRun(self):
         print("Run Clicked")
 
-        if self.mft_debug == False and self.mft_csv == False and self.mft_json == False:
+        # Debug Test
+        self.mft_debug_check()
+        if (self.mft_debug == True):
+            sys.stdout = open(self.mft_log_name, 'w')
+
+        if self.mft_csv == False and self.mft_json == False and self.mft_Latex == False:
             self.textBrowser_MFT.setText("최소 하나의 보고서를 설정해주세요.")
         else:
             if self.mft_file_name == '':
@@ -117,6 +127,9 @@ class WindowClass(QMainWindow, form_class):
                     err_msg = traceback.format_exc()
                     print(err_msg)
             self.textBrowser_MFT.setText("작업 완료! 보고서 파일을 확인해주세요.")
+
+        if (self.mft_debug == True):
+            sys.stdout.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
