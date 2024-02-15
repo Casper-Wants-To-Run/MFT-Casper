@@ -23,6 +23,15 @@
 
 ## 사용 방법
 
+### 초기 설정
+- pip install -r requirements.txt
+- python mftCasper-CLI.py 
+  - CLI 환경 기준
+- python mftCasper-GUI.py
+  - GUI 환경 기준 
+
+(+) 추후 .exe 파일 제공 예정. 
+
 ### CLI
 CLI에서 제공하는 옵션은 아래와 같습니다. (analyzeMFT와 동일합니다.)
 
@@ -101,6 +110,8 @@ CLI에서 제공하는 옵션은 아래와 같습니다. (analyzeMFT와 동일�
 ## 시연 영상 
 
 ### GUI
+Python 3.11.5 / MacOS Sonoma 
+
 ![MFT-Casper-GUI-img.gif](Doc%2FMFT-Casper-GUI-img.gif)
 
 
